@@ -25,7 +25,9 @@ export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
 
   useEffect(() => {
     const updateMemberEntryExit = async () => {
-      if (matriculation) {
+      const isValidMatriculation = /^[A-Za-z0-9]+$/.test(matriculation);
+
+      if (isValidMatriculation) {
         try {
           const member = await fetchMemberByMatriculation(matriculation);
           if (member) {
@@ -41,6 +43,8 @@ export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
           console.error("Failed to update member entry/exit:", error);
         }
       }
+      }
+      setMatriculation("");
     };
 
     updateMemberEntryExit();
