@@ -1,83 +1,138 @@
 "use client";
 
-import * as React from "react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Member } from "@/lib/schema";
-import { Toggle } from "@/components/ui/toggle";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useRouter } from "next/navigation";
 import { updateMember } from "@/app/members/actions";
-
-interface EditMemberModalProps {
-  member: Member | null;
-  onClose: () => void;
-}
+import { useToast } from "@/hooks/use-toast";
+import { Member } from "@/lib/schema";
 
 const formSchema = z.object({
-  id: z.string().nonempty({ message: "ID is required." }),
-  name: z.string().min(3, { message: "Name must be at least 3 characters long." }),
-  email: z.string().email({ message: "Invalid email address." }),
   matriculationNumber: z.string().regex(/^\d{7}[A-Za-z]$/, {
     message: "Matriculation number must be 7 digits followed by a letter.",
   }),
-  membershipStatus: z.enum(["Active", "Inactive"], {
-    required_error: "Membership status is required.",
+  name: z.string().min(3, {
+    message: "Name must be at least 3 characters long.",
   }),
-  lastEntry: z.date().nullable(),
-  lastExit: z.date().nullable(),
+  type: z.enum(["Student", "Staff"], {
+    required_error: "Type is required.",
+  }),
+  startDate: z.date({
+    required_error: "A starting date of entry is required.",
+  }),
+  remarks: z
+    .string()
+    .max(500, {
+      message: "Remarks cannot exceed 500 characters.",
+    })
+    .optional(),
 });
 
-export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
-  const form = useForm<Member>({
+export function EditMemberModal({
+  member,
+  onClose,
+}: {
+  member: Member;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: "",
-      name: "",
-      email: "",
-      matriculationNumber: "",
-      membershipStatus: "Active",
-      lastEntry: null,
-      lastExit: null,
-      ...member,
+      matriculationNumber: member.matriculationNumber,
+      name: member.name,
+      type: member.type,
+      remarks: member.remarks,
     },
   });
 
-  React.useEffect(() => {
-    form.reset();
-  }, [member, form.reset]);
+  const { toast } = useToast();
 
-  const onSubmit = async (data: Member) => {
-    await updateMember(data);
-    onClose();
-  };
-
-  if (!member) return null;
+  const onSubmit = useCallback(
+    async (values: z.infer<typeof formSchema>) => {
+      try {
+        await updateMember({
+          ...member,
+          ...values,
+          remarks: values.remarks ?? "",
+        });
+        onClose();
+        form.reset();
+      } catch (error) {
+        toast({
+          title: "Updating member failed",
+          description: String(error),
+          variant: "destructive",
+        });
+      }
+    },
+    [onClose, router]
+  );
 
   return (
-    <Dialog open={!!member} onOpenChange={onClose}>
-      <DialogContent>
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Edit Member</DialogTitle>
+          <DialogDescription>
+            Update the details of the member here.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+            <FormField
+              control={form.control}
+              name='matriculationNumber'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Matriculation No.</FormLabel>
+                  <FormControl>
+                    <Input placeholder='e.g. 2304509I' {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Enter student's matric number or scan their card.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name='name'
@@ -85,63 +140,107 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder='Member name' {...field} />
+                    <Input placeholder='Student name' {...field} />
                   </FormControl>
+                  <FormDescription>Student name</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name='email'
+              name='type'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Member email' {...field} />
-                  </FormControl>
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select a type' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value='Student'>Student</SelectItem>
+                      <SelectItem value='Staff'>Staff</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>Choose type</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name='matriculationNumber'
+              name='startDate'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>Starting date of entry</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={`w-[240px] pl-3 text-left font-normal ${
+                            !field.value && "text-muted-foreground"
+                          }`}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>Enter start date</FormDescription>
+                  <FormMessage />
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => field.onChange(new Date())}
+                    className='mt-2'
+                  >
+                    Use Current Date
+                  </Button>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='remarks'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Matriculation Number</FormLabel>
+                  <FormLabel>Remarks</FormLabel>
                   <FormControl>
-                    <Input placeholder='e.g. 2304509I' {...field} />
+                    <Textarea
+                      placeholder='Enter some remarks'
+                      className='resize-none'
+                      {...field}
+                    />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='membershipStatus'
-              render={({ field }) => (
-                <FormItem className='flex flex-row items-center justify-between'>
-                  <FormLabel>Membership Status</FormLabel>
-                  <FormControl>
-                    <Toggle
-                      pressed={field.value === "Active"}
-                      onPressedChange={(pressed) =>
-                        field.onChange(pressed ? "Active" : "Inactive")
-                      }
-                    >
-                      {field.value === "Active" ? "Active" : "Inactive"}
-                    </Toggle>
-                  </FormControl>
+                  <FormDescription>Enter some remarks</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type='submit'>Save</Button>
-              <Button variant='outline' onClick={onClose}>
-                Cancel
-              </Button>
+              <Button type='submit'>Save Changes</Button>
             </DialogFooter>
           </form>
         </Form>
