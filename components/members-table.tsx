@@ -14,7 +14,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronDown,
+  MoreHorizontal,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -85,14 +91,17 @@ export function MembersTable({ data }: { data: Member[] }) {
         accessorKey: "email",
         header: ({ column }) => {
           return (
-            <Button
-              variant='ghost'
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
+            <Button variant='ghost' onClick={() => column.toggleSorting()}>
               Email
-              <ArrowUpDown className='ml-2 h-4 w-4' />
+              {column.getIsSorted() ? (
+                column.getIsSorted() === "asc" ? (
+                  <ArrowUp />
+                ) : (
+                  <ArrowDown />
+                )
+              ) : (
+                <ArrowUpDown className='ml-2 h-4 w-4' />
+              )}
             </Button>
           );
         },
