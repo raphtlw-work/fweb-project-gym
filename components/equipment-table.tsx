@@ -13,7 +13,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUp, ArrowDown, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+  ChevronDown,
+  MoreHorizontal,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -37,13 +43,7 @@ import {
 } from "@/components/ui/table";
 import { Equipment } from "@/lib/schema";
 import { parseISO } from "date-fns";
-
-function calculateEquipmentHealth(lastMaintainedAt: Date, maintenanceDate: Date): number {
-  const totalDuration = maintenanceDate.getTime() - lastMaintainedAt.getTime();
-  const elapsedDuration = Date.now() - lastMaintainedAt.getTime();
-  const health = 100 - (elapsedDuration / totalDuration) * 100;
-  return Math.max(0, Math.min(100, Math.round(health)));
-}
+import { calculateEquipmentHealth } from "@/lib/equipment";
 
 export const columns: ColumnDef<Equipment>[] = [
   {
@@ -69,10 +69,7 @@ export const columns: ColumnDef<Equipment>[] = [
     accessorKey: "name",
     header: ({ column }) => {
       return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
+        <Button variant='ghost' onClick={() => column.toggleSorting()}>
           Name
           {column.getIsSorted() ? (
             column.getIsSorted() === "asc" ? (
@@ -101,10 +98,7 @@ export const columns: ColumnDef<Equipment>[] = [
     accessorKey: "health",
     header: ({ column }) => {
       return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
+        <Button variant='ghost' onClick={() => column.toggleSorting()}>
           Health
           {column.getIsSorted() ? (
             column.getIsSorted() === "asc" ? (
