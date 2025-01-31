@@ -171,7 +171,7 @@ export function EquipmentTable({ data }: { data: Equipment[] }) {
         accessorKey: "lastMaintainedAt",
         header: "Last Maintained",
         cell: ({ row }) => (
-          <div>{format(row.getValue("lastMaintainedAt"), "")}</div>
+          <div>{format(row.getValue("lastMaintainedAt"), "PPP")}</div>
         ),
       },
       {
