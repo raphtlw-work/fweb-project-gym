@@ -32,6 +32,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
+import { updateEquipment } from "@/app/equipment/actions";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -65,17 +66,7 @@ export function AddEquipmentModal({
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
       try {
-        const response = await fetch("/api/equipment", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to add equipment");
-        }
+        await updateEquipment(values);
 
         onOpenChange(false);
         router.refresh();
