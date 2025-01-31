@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { updateMember } from "@/app/members/actions";
+import {
+  fetchMemberByMatriculation,
+  updateMember,
+} from "@/app/members/actions";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -41,6 +45,8 @@ export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
 
     updateMemberEntryExit();
   }, [matriculation]);
+
+  return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-md w-full'>
         <DialogHeader>
@@ -57,9 +63,7 @@ export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
           </div>
           <div className='space-y-2 text-center'>
             <h3 className='text-lg font-semibold'>Scan Matriculation Card</h3>
-            <p className='text-sm text-muted-foreground'>
-              Check-in/out student
-            </p>
+            <DialogDescription>Check-in/out student</DialogDescription>
           </div>
           <Input
             type='text'
