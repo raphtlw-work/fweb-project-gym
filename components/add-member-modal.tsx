@@ -43,16 +43,20 @@ import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   matriculationNo: z.string().regex(/^\d{7}[A-Za-z]$/, {
-    message: "Must be 7 numbers followed by 1 letter",
+    message: "Matriculation number must be 7 digits followed by a letter.",
   }),
   name: z.string().min(3, {
-    message: "Name must be at least 3 characters.",
+    message: "Name must be at least 3 characters long.",
   }),
-  type: z.enum(["Student", "Staff"]),
+  type: z.enum(["Student", "Staff"], {
+    required_error: "Type is required.",
+  }),
   startDate: z.date({
-    required_error: "A date of entry is required.",
+    required_error: "A starting date of entry is required.",
   }),
-  remarks: z.string().optional(),
+  remarks: z.string().max(500, {
+    message: "Remarks cannot exceed 500 characters.",
+  }).optional(),
 });
 
 export function AddMemberModal({

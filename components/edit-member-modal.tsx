@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +30,23 @@ interface EditMemberModalProps {
   onClose: () => void;
 }
 
+const formSchema = z.object({
+  id: z.string().nonempty({ message: "ID is required." }),
+  name: z.string().min(3, { message: "Name must be at least 3 characters long." }),
+  email: z.string().email({ message: "Invalid email address." }),
+  matriculationNumber: z.string().regex(/^\d{7}[A-Za-z]$/, {
+    message: "Matriculation number must be 7 digits followed by a letter.",
+  }),
+  membershipStatus: z.enum(["Active", "Inactive"], {
+    required_error: "Membership status is required.",
+  }),
+  lastEntry: z.date().nullable(),
+  lastExit: z.date().nullable(),
+});
+
 export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
   const form = useForm<Member>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       id: "",
       name: "",
