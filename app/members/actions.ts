@@ -33,6 +33,26 @@ export async function fetchMemberByMatriculation(
   }
 }
 
+export async function addMember(member: Omit<Member, "id">) {
+  try {
+    const db = await connectToDatabase();
+    const collection = db.collection("members");
+
+    const result = await collection.insertOne(member);
+
+    if (!result.insertedId) {
+      throw new Error("Failed to add member");
+    }
+
+    revalidatePath("/members");
+
+    return { success: true, id: result.insertedId };
+  } catch (error) {
+    console.error("Failed to add member:", error);
+    throw new Error("Failed to add member");
+  }
+}
+
 export async function updateMember(member: Member) {
   try {
     const db = await connectToDatabase();
