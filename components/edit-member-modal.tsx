@@ -2,7 +2,13 @@
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -22,13 +28,13 @@ interface EditMemberModalProps {
 }
 
 export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
-  const { control, handleSubmit, reset } = useForm<Member>({
+  const form = useForm<Member>({
     defaultValues: member || {},
   });
 
   React.useEffect(() => {
-    reset(member || {});
-  }, [member, reset]);
+    form.reset(member || {});
+  }, [member, form.reset]);
 
   const onSubmit = async (data: Member) => {
     await updateMember(data);
@@ -43,63 +49,65 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
         <DialogHeader>
           <DialogTitle>Edit Member</DialogTitle>
         </DialogHeader>
-        <Form>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
             <FormField
-              control={control}
-              name="name"
+              control={form.control}
+              name='name'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Member name" {...field} />
+                    <Input placeholder='Member name' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              control={control}
-              name="email"
+              control={form.control}
+              name='email'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Member email" {...field} />
+                    <Input placeholder='Member email' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              control={control}
-              name="matriculationNumber"
+              control={form.control}
+              name='matriculationNumber'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Matriculation Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. 2304509I" {...field} />
+                    <Input placeholder='e.g. 2304509I' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              control={control}
-              name="membershipStatus"
+              control={form.control}
+              name='membershipStatus'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Membership Status</FormLabel>
                   <FormControl>
-                    <Input placeholder="Active/Inactive" {...field} />
+                    <Input placeholder='Active/Inactive' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save</Button>
-              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type='submit'>Save</Button>
+              <Button variant='outline' onClick={onClose}>
+                Cancel
+              </Button>
             </DialogFooter>
           </form>
         </Form>
