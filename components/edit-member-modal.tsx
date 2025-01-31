@@ -35,7 +35,7 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
       name: "",
       email: "",
       matriculationNumber: "",
-      membershipStatus: "",
+      membershipStatus: "Active",
       lastEntry: null,
       lastExit: null,
       ...member,
@@ -43,7 +43,7 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
   });
 
   React.useEffect(() => {
-    form.reset(member || {});
+    form.reset();
   }, [member, form.reset]);
 
   const onSubmit = async (data: Member) => {
@@ -104,7 +104,7 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
               control={form.control}
               name='membershipStatus'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='flex flex-row items-center justify-between'>
                   <FormLabel>Membership Status</FormLabel>
                   <FormControl>
                     <Toggle
