@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Darker_Grotesque, Inter_Tight } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

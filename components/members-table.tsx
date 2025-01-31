@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/table";
 import { Member } from "@/lib/schema";
 import { EditMemberModal } from "@/components/edit-member-modal";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function MembersTable({ data }: { data: Member[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -182,14 +182,17 @@ export function MembersTable({ data }: { data: Member[] }) {
                 >
                   Copy member ID
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleCopyToClipboard(member.matriculationNumber, "Matriculation Number")}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    handleCopyToClipboard(
+                      member.matriculationNumber,
+                      "Matriculation Number"
+                    )
+                  }
+                >
                   Copy matriculation number
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => alert(`Viewing details for ${member.name}`)}>
-                  View member details
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setEditMember(member)}>
                   Edit member
                 </DropdownMenuItem>
