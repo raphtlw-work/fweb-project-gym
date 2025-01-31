@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/table";
 import { Member } from "@/lib/schema";
 import { EditMemberModal } from "@/components/edit-member-modal";
+import { useToast } from "@/components/ui/use-toast";
 
 export function MembersTable({ data }: { data: Member[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -55,6 +56,17 @@ export function MembersTable({ data }: { data: Member[] }) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const [editMember, setEditMember] = React.useState<Member | null>(null);
+
+  const { toast } = useToast();
+
+  const handleCopyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast({
+        title: `${label} copied to clipboard`,
+        description: text,
+      });
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -166,12 +178,18 @@ export function MembersTable({ data }: { data: Member[] }) {
               <DropdownMenuContent align='end'>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
-                  onClick={() => navigator.clipboard.writeText(member.id)}
+                  onClick={() => handleCopyToClipboard(member.id, "Member ID")}
                 >
                   Copy member ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>View member details</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleCopyToClipboard(member.matriculationNumber, "Matriculation Number")}>
+                  Copy matriculation number
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => alert(`Viewing details for ${member.name}`)}>
+                  View member details
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setEditMember(member)}>
                   Edit member
                 </DropdownMenuItem>
