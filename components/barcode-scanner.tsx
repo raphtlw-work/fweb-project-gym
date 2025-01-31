@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScannerHand } from "./icons/scanner-hand";
+import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "next-themes";
 
 interface BarcodeScannerProps {
   open: boolean;
@@ -23,32 +25,41 @@ interface BarcodeScannerProps {
 export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
   const [matriculation, setMatriculation] = useState("");
 
+  const { toast } = useToast();
+
   useEffect(() => {
     const updateMemberEntryExit = async () => {
-      const isValidMatriculation = /^[A-Za-z0-9]+$/.test(matriculation);
+      const isValidMatriculation = /^[0-9]+[A-Z]$/.test(matriculation);
 
       if (isValidMatriculation) {
         try {
           const member = await fetchMemberByMatriculation(matriculation);
           if (member) {
             const now = new Date();
-            const updatedMember = {
-              ...member,
-              lastEntry: member.lastExit ? now : member.lastEntry,
-              lastExit: member.lastEntry ? now : member.lastExit,
-            };
-            await updateMember(updatedMember);
+            if (member.lastEntry && member.lastExit === null) {
+              member.lastExit = now;
+            } else if (member.lastEntry && member.lastExit) {
+              member.lastEntry = now;
+              member.lastExit = null;
+            }
+            await updateMember(member);
           }
         } catch (error) {
-          console.error("Failed to update member entry/exit:", error);
+          toast({
+            title: "Failed to update member entry/exit",
+            description: String(error),
+            variant: "destructive",
+          });
+        } finally {
+          setMatriculation("");
         }
       }
-      }
-      setMatriculation("");
     };
 
     updateMemberEntryExit();
   }, [matriculation]);
+
+  const { theme } = useTheme();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -62,7 +73,7 @@ export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
               style={{
                 filter: "contrast(1.2) brightness(0.9)",
               }}
-              fill='white'
+              fill={theme === "dark" ? "white" : "black"}
             />
           </div>
           <div className='space-y-2 text-center'>

@@ -8,71 +8,67 @@ import { revalidatePath } from "next/cache";
 export async function fetchMemberByMatriculation(
   matriculation: string
 ): Promise<Member | null> {
-  try {
-    const db = await connectToDatabase();
-    const collection = db.collection("members");
+  const db = await connectToDatabase();
+  const collection = db.collection("members");
 
-    const member = await collection.findOne({
-      matriculationNumber: matriculation,
-    });
-    if (member) {
-      return {
-        id: member._id.toString(),
-        name: member.name,
-        email: member.email,
-        matriculationNumber: member.matriculationNumber,
-        membershipStatus: member.membershipStatus,
-        matriculation: member.matriculation,
-        lastEntry: member.lastEntry ? member.lastEntry.toISOString() : null,
-        lastExit: member.lastExit ? member.lastExit.toISOString() : null,
-      } as unknown as Member;
-    }
-    return null;
-  } catch (error) {
-    throw new Error("Failed to fetch member by matriculation:");
+  const member = await collection.findOne({
+    matriculationNumber: matriculation,
+  });
+
+  if (member) {
+    return {
+      id: member._id.toString(),
+      name: member.name,
+      email: member.email,
+      matriculationNumber: member.matriculationNumber,
+      membershipStatus: member.membershipStatus,
+      matriculation: member.matriculation,
+      lastEntry: member.lastEntry ? member.lastEntry : null,
+      lastExit: member.lastExit ? member.lastExit : null,
+    } as unknown as Member;
   }
+
+  return null;
 }
 
 export async function addMember(member: Omit<Member, "id">) {
-  try {
-    const db = await connectToDatabase();
-    const collection = db.collection("members");
+  const db = await connectToDatabase();
+  const collection = db.collection("members");
 
-    const result = await collection.insertOne(member);
+  if (
+    await collection.findOne({
+      matriculationNumber: member.matriculationNumber,
+    })
+  ) {
+    throw new Error("Member already exists.");
+  }
 
-    if (!result.insertedId) {
-      throw new Error("Failed to add member");
-    }
+  const result = await collection.insertOne(member);
 
-    revalidatePath("/members");
-
-    return { success: true, id: result.insertedId };
-  } catch (error) {
-    console.error("Failed to add member:", error);
+  if (!result.insertedId) {
     throw new Error("Failed to add member");
   }
+
+  revalidatePath("/members");
+
+  return { success: true, id: result.insertedId.toString() };
 }
 
 export async function updateMember(member: Member) {
-  try {
-    const db = await connectToDatabase();
-    const collection = db.collection("members");
+  const db = await connectToDatabase();
+  const collection = db.collection("members");
 
-    const { id, ...updateData } = member;
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updateData }
-    );
+  const { id, ...updateData } = member;
+  const result = await collection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updateData }
+  );
 
-    if (result.matchedCount === 0) {
-      throw new Error("Member not found");
-    }
-
-    revalidatePath("/members");
-
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to update member:", error);
-    throw new Error("Failed to update member");
+  if (result.matchedCount === 0) {
+    throw new Error("Member not found");
   }
+
+  revalidatePath("/members");
+
+  return { success: true };
 }

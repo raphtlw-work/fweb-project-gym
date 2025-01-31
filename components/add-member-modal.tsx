@@ -41,9 +41,10 @@ import {
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
 import { addMember } from "@/app/members/actions";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
-  matriculationNo: z.string().regex(/^\d{7}[A-Za-z]$/, {
+  matriculationNumber: z.string().regex(/^\d{7}[A-Za-z]$/, {
     message: "Matriculation number must be 7 digits followed by a letter.",
   }),
   name: z.string().min(3, {
@@ -55,9 +56,12 @@ const formSchema = z.object({
   startDate: z.date({
     required_error: "A starting date of entry is required.",
   }),
-  remarks: z.string().max(500, {
-    message: "Remarks cannot exceed 500 characters.",
-  }).optional(),
+  remarks: z
+    .string()
+    .max(500, {
+      message: "Remarks cannot exceed 500 characters.",
+    })
+    .optional(),
 });
 
 export function AddMemberModal({
@@ -71,25 +75,34 @@ export function AddMemberModal({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      matriculationNo: "",
+      matriculationNumber: "",
       name: "",
       type: "Student",
       remarks: "",
     },
   });
 
+  const { toast } = useToast();
+
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
       try {
-        try {
-          await addMember(values);
-          onOpenChange(false);
-          router.refresh();
-        } catch (error) {
-          console.error("Error adding member:", error);
-        }
+        await addMember({
+          email: `${values.matriculationNumber}@student.tp.edu.sg`,
+          ...values,
+          remarks: values.remarks ?? "",
+          membershipStatus: "Active",
+          lastEntry: null,
+          lastExit: null,
+        });
+        onOpenChange(false);
+        form.reset();
       } catch (error) {
-        console.error("Error adding member:", error);
+        toast({
+          title: "Adding member failed",
+          description: String(error),
+          variant: "destructive",
+        });
       }
     },
     [onOpenChange, router]
@@ -108,7 +121,7 @@ export function AddMemberModal({
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
             <FormField
               control={form.control}
-              name='matriculationNo'
+              name='matriculationNumber'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Matriculation No.</FormLabel>

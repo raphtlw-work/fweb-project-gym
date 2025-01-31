@@ -3,7 +3,10 @@ export interface Member {
   name: string;
   email: string;
   matriculationNumber: string;
-  membershipStatus: string;
+  membershipStatus: "Active" | "Inactive";
+  type: "Student" | "Staff";
+  remarks: string;
+
   lastEntry: Date | null;
   lastExit: Date | null;
 }
