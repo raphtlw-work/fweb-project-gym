@@ -10,9 +10,10 @@ export async function updateMember(member: Member) {
     const db = await connectToDatabase();
     const collection = db.collection("members");
 
+    const { id, ...updateData } = member;
     const result = await collection.updateOne(
-      { _id: new ObjectId(member.id) },
-      { $set: member }
+      { _id: new ObjectId(id) },
+      { $set: updateData }
     );
 
     if (result.matchedCount === 0) {
