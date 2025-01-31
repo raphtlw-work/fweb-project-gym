@@ -37,6 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Member } from "@/lib/schema";
+import { EditMemberModal } from "@/components/edit-member-modal";
 
 export function MembersTable({ data }: { data: Member[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -299,6 +300,12 @@ export function MembersTable({ data }: { data: Member[] }) {
           </Button>
         </div>
       </div>
+      {editMember && (
+        <EditMemberModal
+          member={editMember}
+          onClose={() => setEditMember(null)}
+        />
+      )}
     </div>
   );
 }
