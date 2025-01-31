@@ -178,7 +178,9 @@ export const columns: ColumnDef<Equipment>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem>View maintenance history</DropdownMenuItem>
             <DropdownMenuItem>Schedule maintenance</DropdownMenuItem>
-            <DropdownMenuItem>Update health status</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setEditEquipment(equipment)}>
+              Update equipment
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -194,6 +196,8 @@ export function EquipmentTable({ data }: { data: Equipment[] }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const [editEquipment, setEditEquipment] = React.useState<Equipment | null>(null);
 
   const table = useReactTable({
     data,
@@ -326,6 +330,12 @@ export function EquipmentTable({ data }: { data: Equipment[] }) {
           </Button>
         </div>
       </div>
+      {editEquipment && (
+        <EditEquipmentModal
+          equipment={editEquipment}
+          onClose={() => setEditEquipment(null)}
+        />
+      )}
     </div>
   );
 }
