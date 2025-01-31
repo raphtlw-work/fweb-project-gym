@@ -15,9 +15,15 @@ export async function fetchMemberByMatriculation(
     const member = await collection.findOne({
       matriculationNumber: matriculation,
     });
-    return member
-      ? ({ id: member._id.toString(), ...member } as unknown as Member)
-      : null;
+    if (member) {
+      return {
+        id: member._id.toString(),
+        ...member,
+        lastEntry: member.lastEntry ? member.lastEntry.toISOString() : null,
+        lastExit: member.lastExit ? member.lastExit.toISOString() : null,
+      } as unknown as Member;
+    }
+    return null;
   } catch (error) {
     throw new Error("Failed to fetch member by matriculation:");
   }
