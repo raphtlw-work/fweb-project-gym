@@ -5,7 +5,18 @@ import { Member } from "@/lib/schema";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
-export async function updateMember(member: Member) {
+export async function fetchMemberByMatriculation(matriculation: string): Promise<Member | null> {
+  try {
+    const db = await connectToDatabase();
+    const collection = db.collection("members");
+
+    const member = await collection.findOne({ matriculationNumber: matriculation });
+    return member ? (member as Member) : null;
+  } catch (error) {
+    console.error("Failed to fetch member by matriculation:", error);
+    return null;
+  }
+}
   try {
     const db = await connectToDatabase();
     const collection = db.collection("members");

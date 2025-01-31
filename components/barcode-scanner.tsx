@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { updateMember } from "@/app/members/actions";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,28 @@ interface BarcodeScannerProps {
 export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
   const [matriculation, setMatriculation] = useState("");
 
-  return (
+  useEffect(() => {
+    const updateMemberEntryExit = async () => {
+      if (matriculation) {
+        try {
+          const member = await fetchMemberByMatriculation(matriculation);
+          if (member) {
+            const now = new Date();
+            const updatedMember = {
+              ...member,
+              lastEntry: member.lastExit ? now : member.lastEntry,
+              lastExit: member.lastEntry ? now : member.lastExit,
+            };
+            await updateMember(updatedMember);
+          }
+        } catch (error) {
+          console.error("Failed to update member entry/exit:", error);
+        }
+      }
+    };
+
+    updateMemberEntryExit();
+  }, [matriculation]);
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-md w-full'>
         <DialogHeader>
