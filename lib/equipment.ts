@@ -1,5 +1,7 @@
 import { parseISO } from "date-fns";
 
+export const EQUIPMENT_REPLACEMENT_PERIOD_YEARS = 2;
+
 export function calculateEquipmentHealth(
   lastMaintainedAt: Date | string,
   maintenanceDate: Date | string
