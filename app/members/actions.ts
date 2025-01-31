@@ -17,6 +17,7 @@ export async function fetchMemberByMatriculation(matriculation: string): Promise
     return null;
   }
 }
+export async function updateMember(member: Member) {
   try {
     const db = await connectToDatabase();
     const collection = db.collection("members");
@@ -38,4 +39,5 @@ export async function fetchMemberByMatriculation(matriculation: string): Promise
     console.error("Failed to update member:", error);
     throw new Error("Failed to update member");
   }
+}
 }
