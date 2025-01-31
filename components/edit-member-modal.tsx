@@ -22,7 +22,7 @@ interface EditMemberModalProps {
 }
 
 export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
-  const { register, handleSubmit, reset } = useForm<Member>({
+  const { control, handleSubmit, reset } = useForm<Member>({
     defaultValues: member || {},
   });
 
@@ -46,7 +46,7 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
         <Form>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <FormField
-              control={register}
+              control={control}
               name="name"
               render={({ field }) => (
                 <FormItem>
@@ -59,7 +59,7 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
               )}
             />
             <FormField
-              control={register}
+              control={control}
               name="email"
               render={({ field }) => (
                 <FormItem>
@@ -72,7 +72,7 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
               )}
             />
             <FormField
-              control={register}
+              control={control}
               name="matriculationNumber"
               render={({ field }) => (
                 <FormItem>
@@ -85,7 +85,7 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
               )}
             />
             <FormField
-              control={register}
+              control={control}
               name="membershipStatus"
               render={({ field }) => (
                 <FormItem>
