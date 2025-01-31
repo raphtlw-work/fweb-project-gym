@@ -12,7 +12,6 @@ export interface Equipment {
   id: string;
   name: string;
   maintenanceDate: Date;
-  health: number;
   lastMaintainedAt: Date;
 }
 

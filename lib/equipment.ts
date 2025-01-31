@@ -21,6 +21,8 @@ export function calculateEquipmentHealth(
 
 export function needsReplacement(lastMaintainedAt: Date): boolean {
   const replacementDate = new Date(lastMaintainedAt);
-  replacementDate.setFullYear(replacementDate.getFullYear() + EQUIPMENT_REPLACEMENT_PERIOD_YEARS);
+  replacementDate.setFullYear(
+    replacementDate.getFullYear() + EQUIPMENT_REPLACEMENT_PERIOD_YEARS
+  );
   return new Date() >= replacementDate;
 }

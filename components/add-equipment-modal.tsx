@@ -32,7 +32,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
-import { updateEquipment } from "@/app/equipment/actions";
+import { addEquipment } from "@/app/equipment/actions";
 
 const formSchema = z.object({
   name: z.string().min(2, {

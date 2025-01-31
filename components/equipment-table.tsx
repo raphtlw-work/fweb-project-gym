@@ -44,149 +44,7 @@ import {
 import { Equipment } from "@/lib/schema";
 import { parseISO } from "date-fns";
 import { calculateEquipmentHealth } from "@/lib/equipment";
-
-export const columns: ColumnDef<Equipment>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button variant='ghost' onClick={() => column.toggleSorting()}>
-          Name
-          {column.getIsSorted() ? (
-            column.getIsSorted() === "asc" ? (
-              <ArrowUp />
-            ) : (
-              <ArrowDown />
-            )
-          ) : (
-            <ArrowUpDown className='ml-2 h-4 w-4' />
-          )}
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className='capitalize'>{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "maintenanceDate",
-    header: "Next Maintenance",
-    cell: ({ row }) => (
-      <div>
-        {new Date(row.getValue("maintenanceDate")).toLocaleDateString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "health",
-    header: ({ column }) => {
-      return (
-        <Button variant='ghost' onClick={() => column.toggleSorting()}>
-          Health
-          {column.getIsSorted() ? (
-            column.getIsSorted() === "asc" ? (
-              <ArrowUp />
-            ) : (
-              <ArrowDown />
-            )
-          ) : (
-            <ArrowUpDown className='ml-2 h-4 w-4' />
-          )}
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const equipment = row.original;
-      const health = calculateEquipmentHealth(
-        parseISO(equipment.lastMaintainedAt as unknown as string),
-        parseISO(equipment.maintenanceDate as unknown as string)
-      );
-      return (
-        <div className='flex items-center'>
-          <span
-            className={`mr-2 font-medium ${
-              health >= 90
-                ? "text-green-600"
-                : health >= 70
-                ? "text-yellow-600"
-                : "text-red-600"
-            }`}
-          >
-            {health}%
-          </span>
-          <div className='w-16 h-2 bg-gray-200 rounded-full overflow-hidden'>
-            <div
-              className={`h-full ${
-                health >= 90
-                  ? "bg-green-600"
-                  : health >= 70
-                  ? "bg-yellow-600"
-                  : "bg-red-600"
-              }`}
-              style={{ width: `${health}%` }}
-            />
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "lastMaintainedAt",
-    header: "Last Maintained",
-    cell: ({ row }) => (
-      <div>{new Date(row.getValue("lastMaintainedAt")).toLocaleString()}</div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const equipment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(equipment.id)}
-            >
-              Copy equipment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View maintenance history</DropdownMenuItem>
-            <DropdownMenuItem>Schedule maintenance</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setEditEquipment(equipment)}>
-              Update equipment
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+import { EditEquipmentModal } from "./edit-equipment-modal";
 
 export function EquipmentTable({ data }: { data: Equipment[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -197,11 +55,160 @@ export function EquipmentTable({ data }: { data: Equipment[] }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [editEquipment, setEditEquipment] = React.useState<Equipment | null>(null);
+  const [editEquipment, setEditEquipment] = React.useState<Equipment | null>(
+    null
+  );
 
   const table = useReactTable({
     data,
-    columns,
+    columns: [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label='Select all'
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label='Select row'
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+      {
+        accessorKey: "name",
+        header: ({ column }) => {
+          return (
+            <Button variant='ghost' onClick={() => column.toggleSorting()}>
+              Name
+              {column.getIsSorted() ? (
+                column.getIsSorted() === "asc" ? (
+                  <ArrowUp />
+                ) : (
+                  <ArrowDown />
+                )
+              ) : (
+                <ArrowUpDown className='ml-2 h-4 w-4' />
+              )}
+            </Button>
+          );
+        },
+        cell: ({ row }) => (
+          <div className='capitalize'>{row.getValue("name")}</div>
+        ),
+      },
+      {
+        accessorKey: "maintenanceDate",
+        header: "Next Maintenance",
+        cell: ({ row }) => (
+          <div>
+            {new Date(row.getValue("maintenanceDate")).toLocaleDateString()}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "health",
+        header: ({ column }) => {
+          return (
+            <Button variant='ghost' onClick={() => column.toggleSorting()}>
+              Health
+              {column.getIsSorted() ? (
+                column.getIsSorted() === "asc" ? (
+                  <ArrowUp />
+                ) : (
+                  <ArrowDown />
+                )
+              ) : (
+                <ArrowUpDown className='ml-2 h-4 w-4' />
+              )}
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const equipment = row.original;
+          const health = calculateEquipmentHealth(
+            equipment.lastMaintainedAt,
+            equipment.maintenanceDate
+          );
+          return (
+            <div className='flex items-center'>
+              <span
+                className={`mr-2 font-medium ${
+                  health >= 90
+                    ? "text-green-600"
+                    : health >= 70
+                    ? "text-yellow-600"
+                    : "text-red-600"
+                }`}
+              >
+                {health}%
+              </span>
+              <div className='w-16 h-2 bg-gray-200 rounded-full overflow-hidden'>
+                <div
+                  className={`h-full ${
+                    health >= 90
+                      ? "bg-green-600"
+                      : health >= 70
+                      ? "bg-yellow-600"
+                      : "bg-red-600"
+                  }`}
+                  style={{ width: `${health}%` }}
+                />
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "lastMaintainedAt",
+        header: "Last Maintained",
+        cell: ({ row }) => (
+          <div>
+            {new Date(row.getValue("lastMaintainedAt")).toLocaleString()}
+          </div>
+        ),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const equipment = row.original;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant='ghost' className='h-8 w-8 p-0'>
+                  <span className='sr-only'>Open menu</span>
+                  <MoreHorizontal className='h-4 w-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(equipment.id)}
+                >
+                  Copy equipment ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>View maintenance history</DropdownMenuItem>
+                <DropdownMenuItem>Schedule maintenance</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setEditEquipment(equipment)}>
+                  Update equipment
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -296,7 +303,7 @@ export function EquipmentTable({ data }: { data: Equipment[] }) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllColumns().length}
                   className='h-24 text-center'
                 >
                   No results.

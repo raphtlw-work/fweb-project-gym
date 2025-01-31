@@ -24,6 +24,7 @@ export async function addEquipment(equipment: Omit<Equipment, "id">) {
     throw new Error("Failed to add equipment");
   }
 }
+
 export async function updateEquipment(equipment: Equipment) {
   try {
     const db = await connectToDatabase();
