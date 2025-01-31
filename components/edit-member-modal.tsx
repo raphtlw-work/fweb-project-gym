@@ -4,6 +4,14 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Member } from "@/lib/schema";
 import { updateMember } from "@/app/members/actions";
@@ -35,18 +43,66 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
         <DialogHeader>
           <DialogTitle>Edit Member</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
-            <Input label="Name" {...register("name")} />
-            <Input label="Email" {...register("email")} />
-            <Input label="Matriculation Number" {...register("matriculationNumber")} />
-            <Input label="Membership Status" {...register("membershipStatus")} />
-          </div>
-          <DialogFooter>
-            <Button type="submit">Save</Button>
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
-          </DialogFooter>
-        </form>
+        <Form>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={register}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Member name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={register}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Member email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={register}
+              name="matriculationNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Matriculation Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. 2304509I" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={register}
+              name="membershipStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Membership Status</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Active/Inactive" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit">Save</Button>
+              <Button variant="outline" onClick={onClose}>Cancel</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
