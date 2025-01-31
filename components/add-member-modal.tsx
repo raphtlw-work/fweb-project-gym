@@ -40,6 +40,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
+import { addMember } from "@/app/members/actions";
 
 const formSchema = z.object({
   matriculationNo: z.string().regex(/^\d{7}[A-Za-z]$/, {
@@ -80,20 +81,13 @@ export function AddMemberModal({
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
       try {
-        fetch("/api/members", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        }).then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to add member");
-          }
-
+        try {
+          await addMember(values);
           onOpenChange(false);
           router.refresh();
-        });
+        } catch (error) {
+          console.error("Error adding member:", error);
+        }
       } catch (error) {
         console.error("Error adding member:", error);
       }
