@@ -50,7 +50,7 @@ export function MembersTable({ data }: { data: Member[] }) {
 
   const [editMember, setEditMember] = React.useState<Member | null>(null);
 
-  const table = useReactTable<Member>({
+  const table = useReactTable({
     data,
     columns: [
       {
@@ -173,7 +173,6 @@ export function MembersTable({ data }: { data: Member[] }) {
       },
     ],
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
