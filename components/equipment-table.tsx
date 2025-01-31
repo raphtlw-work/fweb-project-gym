@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUp, ArrowDown, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,9 +35,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { calculateEquipmentHealth } from "@/lib/utils";
 import { Equipment } from "@/lib/schema";
 import { parseISO } from "date-fns";
+
+function calculateEquipmentHealth(lastMaintainedAt: Date, maintenanceDate: Date): number {
+  const totalDuration = maintenanceDate.getTime() - lastMaintainedAt.getTime();
+  const elapsedDuration = Date.now() - lastMaintainedAt.getTime();
+  const health = 100 - (elapsedDuration / totalDuration) * 100;
+  return Math.max(0, Math.min(100, Math.round(health)));
+}
 
 export const columns: ColumnDef<Equipment>[] = [
   {
@@ -68,7 +74,15 @@ export const columns: ColumnDef<Equipment>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name
-          <ArrowUpDown className='ml-2 h-4 w-4' />
+          {column.getIsSorted() ? (
+            column.getIsSorted() === "asc" ? (
+              <ArrowUp />
+            ) : (
+              <ArrowDown />
+            )
+          ) : (
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          )}
         </Button>
       );
     },
@@ -92,7 +106,15 @@ export const columns: ColumnDef<Equipment>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Health
-          <ArrowUpDown className='ml-2 h-4 w-4' />
+          {column.getIsSorted() ? (
+            column.getIsSorted() === "asc" ? (
+              <ArrowUp />
+            ) : (
+              <ArrowDown />
+            )
+          ) : (
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          )}
         </Button>
       );
     },
