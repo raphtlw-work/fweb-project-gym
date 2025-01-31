@@ -66,7 +66,7 @@ export function AddEquipmentModal({
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
       try {
-        await updateEquipment(values);
+        await addEquipment(values);
 
         onOpenChange(false);
         router.refresh();
