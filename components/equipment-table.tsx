@@ -42,7 +42,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Equipment } from "@/lib/schema";
-import { parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { calculateEquipmentHealth } from "@/lib/equipment";
 import { EditEquipmentModal } from "./edit-equipment-modal";
 
@@ -171,9 +171,7 @@ export function EquipmentTable({ data }: { data: Equipment[] }) {
         accessorKey: "lastMaintainedAt",
         header: "Last Maintained",
         cell: ({ row }) => (
-          <div>
-            {new Date(row.getValue("lastMaintainedAt")).toLocaleString()}
-          </div>
+          <div>{format(row.getValue("lastMaintainedAt"), "")}</div>
         ),
       },
       {
