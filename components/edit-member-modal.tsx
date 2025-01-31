@@ -29,7 +29,16 @@ interface EditMemberModalProps {
 
 export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
   const form = useForm<Member>({
-    defaultValues: member || {},
+    defaultValues: {
+      id: "",
+      name: "",
+      email: "",
+      matriculationNumber: "",
+      membershipStatus: "",
+      lastEntry: null,
+      lastExit: null,
+      ...member,
+    },
   });
 
   React.useEffect(() => {
