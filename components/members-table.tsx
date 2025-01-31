@@ -36,121 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-export type Member = {
-  id: string;
-  name: string;
-  email: string;
-  matriculationNumber: string;
-  membershipStatus: string;
-  lastEntry: Date | null;
-  lastExit: Date | null;
-};
-
-export const columns: ColumnDef<Member>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => <div className='capitalize'>{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className='lowercase'>{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "matriculationNumber",
-    header: "Matriculation Number",
-    cell: ({ row }) => (
-      <div className='capitalize'>{row.getValue("matriculationNumber")}</div>
-    ),
-  },
-  {
-    accessorKey: "membershipStatus",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className='capitalize'>{row.getValue("membershipStatus")}</div>
-    ),
-  },
-  {
-    accessorKey: "lastEntry",
-    header: "Last Entry",
-    cell: ({ row }) => {
-      const date = row.getValue("lastEntry");
-      return (
-        <div>{date ? new Date(date as string).toLocaleString() : "N/A"}</div>
-      );
-    },
-  },
-  {
-    accessorKey: "lastExit",
-    header: "Last Exit",
-    cell: ({ row }) => {
-      const date = row.getValue("lastExit");
-      return (
-        <div>{date ? new Date(date as string).toLocaleString() : "N/A"}</div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const member = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(member.id)}
-            >
-              Copy member ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View member details</DropdownMenuItem>
-            <DropdownMenuItem>Edit member</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+import { Member } from "@/lib/schema";
 
 export function MembersTable({ data }: { data: Member[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -161,9 +47,130 @@ export function MembersTable({ data }: { data: Member[] }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
+  const [editMember, setEditMember] = React.useState<Member | null>(null);
+
   const table = useReactTable({
     data,
-    columns,
+    columns: [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label='Select all'
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label='Select row'
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => (
+          <div className='capitalize'>{row.getValue("name")}</div>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant='ghost'
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Email
+              <ArrowUpDown className='ml-2 h-4 w-4' />
+            </Button>
+          );
+        },
+        cell: ({ row }) => (
+          <div className='lowercase'>{row.getValue("email")}</div>
+        ),
+      },
+      {
+        accessorKey: "matriculationNumber",
+        header: "Matriculation Number",
+        cell: ({ row }) => (
+          <div className='capitalize'>
+            {row.getValue("matriculationNumber")}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "membershipStatus",
+        header: "Status",
+        cell: ({ row }) => (
+          <div className='capitalize'>{row.getValue("membershipStatus")}</div>
+        ),
+      },
+      {
+        accessorKey: "lastEntry",
+        header: "Last Entry",
+        cell: ({ row }) => {
+          const date = row.getValue("lastEntry");
+          return (
+            <div>
+              {date ? new Date(date as string).toLocaleString() : "N/A"}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "lastExit",
+        header: "Last Exit",
+        cell: ({ row }) => {
+          const date = row.getValue("lastExit");
+          return (
+            <div>
+              {date ? new Date(date as string).toLocaleString() : "N/A"}
+            </div>
+          );
+        },
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const member = row.original;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant='ghost' className='h-8 w-8 p-0'>
+                  <span className='sr-only'>Open menu</span>
+                  <MoreHorizontal className='h-4 w-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(member.id)}
+                >
+                  Copy member ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>View member details</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setEditMember(member)}>
+                  Edit member
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -258,7 +265,7 @@ export function MembersTable({ data }: { data: Member[] }) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllColumns().length}
                   className='h-24 text-center'
                 >
                   No results.
