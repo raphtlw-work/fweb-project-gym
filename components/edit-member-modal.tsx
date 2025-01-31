@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Member } from "@/lib/schema";
+import { Toggle } from "@/components/ui/toggle";
 import { updateMember } from "@/app/members/actions";
 
 interface EditMemberModalProps {
@@ -106,7 +107,14 @@ export function EditMemberModal({ member, onClose }: EditMemberModalProps) {
                 <FormItem>
                   <FormLabel>Membership Status</FormLabel>
                   <FormControl>
-                    <Input placeholder='Active/Inactive' {...field} />
+                    <Toggle
+                      pressed={field.value === "Active"}
+                      onPressedChange={(pressed) =>
+                        field.onChange(pressed ? "Active" : "Inactive")
+                      }
+                    >
+                      {field.value === "Active" ? "Active" : "Inactive"}
+                    </Toggle>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
