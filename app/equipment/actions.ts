@@ -1,3 +1,9 @@
+"use server";
+
+import { connectToDatabase } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { Equipment } from "@/lib/schema";
+
 export async function addEquipment(equipment: Omit<Equipment, "id">) {
   try {
     const db = await connectToDatabase();
