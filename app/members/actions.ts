@@ -18,7 +18,11 @@ export async function fetchMemberByMatriculation(
     if (member) {
       return {
         id: member._id.toString(),
-        ...member,
+        name: member.name,
+        email: member.email,
+        matriculationNumber: member.matriculationNumber,
+        membershipStatus: member.membershipStatus,
+        matriculation: member.matriculation,
         lastEntry: member.lastEntry ? member.lastEntry.toISOString() : null,
         lastExit: member.lastExit ? member.lastExit.toISOString() : null,
       } as unknown as Member;
