@@ -1,37 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function AuthPage() {
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [signupName, setSignupName] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signupPassword, setSignupPassword] = useState("");
-  const [signupRole, setSignupRole] = useState("member");
+type LoginFormInputs = {
+  email: string;
+  password: string;
+};
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+type SignupFormInputs = {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+};
+
+export default function AuthPage() {
+  const { register: loginRegister, handleSubmit: handleLoginSubmit } = useForm<LoginFormInputs>();
+  const { register: signupRegister, handleSubmit: handleSignupSubmit } = useForm<SignupFormInputs>();
+
+  const onLogin = async (data: LoginFormInputs) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      body: JSON.stringify(data),
     });
-    // Handle response as needed
     console.log(await res.json());
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSignup = async (data: SignupFormInputs) => {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: signupName, email: signupEmail, password: signupPassword, role: signupRole }),
+      body: JSON.stringify(data),
     });
-    // Handle response as needed
     console.log(await res.json());
   };
 
@@ -43,25 +47,21 @@ export default function AuthPage() {
           <TabsTrigger value="signup">Sign Up</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLoginSubmit(onLogin)}>
             <div className="flex flex-col gap-4">
-              <Input placeholder="Email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
-              <Input type="password" placeholder="Password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
+              <Input placeholder="Email" {...loginRegister("email", { required: true })} />
+              <Input type="password" placeholder="Password" {...loginRegister("password", { required: true })} />
               <Button type="submit">Login</Button>
             </div>
           </form>
         </TabsContent>
         <TabsContent value="signup">
-          <form onSubmit={handleSignup}>
+          <form onSubmit={handleSignupSubmit(onSignup)}>
             <div className="flex flex-col gap-4">
-              <Input placeholder="Name" value={signupName} onChange={(e) => setSignupName(e.target.value)} />
-              <Input placeholder="Email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} />
-              <Input type="password" placeholder="Password" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} />
-              <select
-                value={signupRole}
-                onChange={(e) => setSignupRole(e.target.value)}
-                className="border p-2 rounded"
-              >
+              <Input placeholder="Name" {...signupRegister("name", { required: true })} />
+              <Input placeholder="Email" {...signupRegister("email", { required: true })} />
+              <Input type="password" placeholder="Password" {...signupRegister("password", { required: true })} />
+              <select {...signupRegister("role", { required: true })} className="border p-2 rounded">
                 <option value="member">Member</option>
                 <option value="staff">Staff</option>
                 <option value="admin">Admin</option>
