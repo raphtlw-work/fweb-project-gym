@@ -25,3 +25,13 @@ export interface Admin {
   school: string;
   kind: string;
 }
+
+export type UserRole = "member" | "staff" | "admin";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  role: UserRole;
+}
