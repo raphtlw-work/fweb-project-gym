@@ -198,6 +198,9 @@ export function MembersTable({ data }: { data: Member[] }) {
                 <DropdownMenuItem onClick={() => setEditMember(member)}>
                   Edit member
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSetPasswordMember(member.id)}>
+                  Set password
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );
