@@ -21,14 +21,20 @@ export function Sidebar() {
   const { setTheme, theme } = useTheme();
   const [scannerOpen, setScannerOpen] = useState(false);
 
-  const isLoggedIn = verifySession();
+  const user = verifySession();
+  const isAdmin = user?.role === "admin";
 
-  const navItems = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Equipment List", href: "/equipment", icon: Dumbbell },
-    { name: "Members", href: "/members", icon: Users },
-    { name: "Manage Admins", href: "/admins", icon: UserCog },
-  ];
+  const navItems = isAdmin
+    ? [
+        { name: "Dashboard", href: "/", icon: LayoutDashboard },
+        { name: "Equipment List", href: "/equipment", icon: Dumbbell },
+        { name: "Members", href: "/members", icon: Users },
+        { name: "Manage Admins", href: "/admins", icon: UserCog },
+      ]
+    : [
+        { name: "Dashboard", href: "/", icon: LayoutDashboard },
+        { name: "Members", href: "/members", icon: Users },
+      ];
 
   return (
     <>
