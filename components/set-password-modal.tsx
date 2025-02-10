@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { setMemberPassword } from "@/app/members/actions";
 
 interface SetPasswordModalProps {
   memberId: string;
@@ -30,8 +31,7 @@ export function SetPasswordModal({
 
   const handleSubmit = async () => {
     try {
-      // Replace this comment with an API call to update the password:
-      // await updatePasswordAPI(memberId, password)
+      await setMemberPassword(memberId, password);
       toast({
         title: "Password updated",
         description: "The password has been successfully updated.",
@@ -47,21 +47,21 @@ export function SetPasswordModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-scroll">
+      <DialogContent className='sm:max-w-[425px] max-h-[80vh] overflow-y-scroll'>
         <DialogHeader>
           <DialogTitle>Set Password</DialogTitle>
           <DialogDescription>Update the user's password.</DialogDescription>
         </DialogHeader>
-        <div className="py-4">
+        <div className='py-4'>
           <Input
-            type="password"
-            placeholder="Enter new password"
+            type='password'
+            placeholder='Enter new password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant='outline' onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={handleSubmit}>Set Password</Button>

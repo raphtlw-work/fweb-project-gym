@@ -15,8 +15,15 @@ export async function loginMemberAction(formData: FormData) {
   if (!isValid) {
     throw new Error("Invalid credentials");
   }
+  const { _id, ...rest } = user;
   // TODO: create session or token
-  return { success: true, user };
+  return {
+    success: true,
+    user: {
+      id: _id.toString(),
+      ...rest,
+    },
+  };
 }
 
 export async function loginAdminAction(formData: FormData) {
@@ -31,6 +38,13 @@ export async function loginAdminAction(formData: FormData) {
   if (!isValid) {
     throw new Error("Invalid credentials");
   }
+  const { _id, ...rest } = admin;
   // TODO: create session or token
-  return { success: true, admin };
+  return {
+    success: true,
+    admin: {
+      id: _id.toString(),
+      ...rest,
+    },
+  };
 }

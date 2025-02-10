@@ -56,6 +56,13 @@ const formSchema = z.object({
   startDate: z.date({
     required_error: "A starting date of entry is required.",
   }),
+  password: z
+    .string({
+      required_error: "Password is required",
+    })
+    .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+      message: "Password strength does not meet the requirements.",
+    }),
   remarks: z
     .string()
     .max(500, {
@@ -78,6 +85,7 @@ export function AddMemberModal({
       matriculationNumber: "",
       name: "",
       type: "Student",
+      password: "",
       remarks: "",
     },
   });
@@ -110,7 +118,7 @@ export function AddMemberModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-[425px] max-h-[80vh] overflow-y-scroll'>
         <DialogHeader>
           <DialogTitle>Add New Member</DialogTitle>
           <DialogDescription>
@@ -220,6 +228,26 @@ export function AddMemberModal({
                   >
                     Use Current Date
                   </Button>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type='password'
+                      placeholder='e.g. Password1$'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Set a password for this member.
+                  </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />
