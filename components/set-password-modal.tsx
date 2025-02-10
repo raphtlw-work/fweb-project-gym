@@ -1,7 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalClose } from "@/components/ui/modal";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalClose,
+} from "@/components/ui.";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +19,11 @@ interface SetPasswordModalProps {
   onClose: () => void;
 }
 
-export function SetPasswordModal({ memberId, open, onClose }: SetPasswordModalProps) {
+export function SetPasswordModal({
+  memberId,
+  open,
+  onClose,
+}: SetPasswordModalProps) {
   const [password, setPassword] = React.useState("");
   const { toast } = useToast();
 
@@ -40,14 +51,16 @@ export function SetPasswordModal({ memberId, open, onClose }: SetPasswordModalPr
         <ModalClose />
         <ModalBody>
           <Input
-            type="password"
-            placeholder="Enter new password"
+            type='password'
+            placeholder='Enter new password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </ModalBody>
         <ModalFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant='outline' onClick={onClose}>
+            Cancel
+          </Button>
           <Button onClick={handleSubmit}>Set Password</Button>
         </ModalFooter>
       </ModalContent>
