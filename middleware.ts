@@ -1,28 +1,43 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { decrypt, SessionPayload } from "@/app/auth/session";
+import { cookies } from "next/headers";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+// 1. Specify protected and public routes
+const protectedRoutes = ["/"];
+const publicRoutes = ["/auth", "/"];
 
-  // Allow requests from these paths without authentication
-  if (
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/static")
-  ) {
-    return NextResponse.next();
+export default async function middleware(req: NextRequest) {
+  const path = req.nextUrl.pathname;
+  const isProtectedRoute = protectedRoutes.includes(path);
+  const isPublicRoute = publicRoutes.includes(path);
+
+  const cookie = (await cookies()).get("session")?.value;
+  const session = (await decrypt(cookie)) as SessionPayload;
+
+  if (isProtectedRoute && !session?.userId) {
+    return NextResponse.redirect(new URL("/auth", req.nextUrl));
   }
 
-  const session = request.cookies.get("session")?.value;
+  if (
+    isPublicRoute &&
+    session?.userId &&
+    !req.nextUrl.pathname.startsWith("/")
+  ) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
 
-  if (!session) {
-    const loginUrl = new URL("/auth", request.url);
-    return NextResponse.redirect(loginUrl);
+  if (
+    session?.role !== "admin" &&
+    (req.nextUrl.pathname.startsWith("/admins") ||
+      req.nextUrl.pathname.startsWith("/equipment"))
+  ) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
   return NextResponse.next();
 }
 
+// Routes Middleware should not run on
 export const config = {
-  matcher: ["/((?!auth|_next|static).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };

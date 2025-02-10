@@ -1,3 +1,5 @@
+"use server";
+
 import SidebarClient from "./sidebar-client";
 import { verifySession } from "@/app/auth/dal";
 
