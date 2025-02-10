@@ -48,6 +48,9 @@ const formSchema = z.object({
   name: z.string().min(3, {
     message: "Name must be at least 3 characters.",
   }),
+  password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+      message: "Password strength does not meet the requirements.",
+    }),
   type: z.enum(["Student", "Staff"]),
   startDate: z.date({
     required_error: "A date of entry is required.",
