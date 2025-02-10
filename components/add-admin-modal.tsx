@@ -145,6 +145,20 @@ export function AddAdminModal({
             />
             <FormField
               control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type='password' placeholder='Enter password' {...field} />
+                  </FormControl>
+                  <FormDescription>Set a password for admin</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name='type'
               render={({ field }) => (
                 <FormItem>
