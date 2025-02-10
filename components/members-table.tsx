@@ -46,6 +46,7 @@ import { Member } from "@/lib/schema";
 import { EditMemberModal } from "@/components/edit-member-modal";
 import { SetPasswordModal } from "@/components/set-password-modal";
 import { useToast } from "@/hooks/use-toast";
+import { deleteMember } from "@/app/members/actions";
 
 export function MembersTable({ data }: { data: Member[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -60,6 +61,20 @@ export function MembersTable({ data }: { data: Member[] }) {
   const [setPasswordMember, setSetPasswordMember] = React.useState<string | null>(null);
 
   const { toast } = useToast();
+  const handleDeleteMember = async (memberId: string) => {
+    try {
+      await deleteMember(memberId);
+      toast({
+        title: "Member deleted",
+        description: "The member has been successfully deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error deleting member",
+        description: "There was an error deleting the member.",
+      });
+    }
+  };
 
   const handleCopyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -200,6 +215,10 @@ export function MembersTable({ data }: { data: Member[] }) {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSetPasswordMember(member.id)}>
                   Set password
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className='text-red-600' onClick={() => handleDeleteMember(member.id)}>
+                  Delete member
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
