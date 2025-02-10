@@ -9,6 +9,8 @@ export interface Member {
 
   lastEntry: Date | null;
   lastExit: Date | null;
+
+  passwordHash: string;
 }
 
 export interface Equipment {

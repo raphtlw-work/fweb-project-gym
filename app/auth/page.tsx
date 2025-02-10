@@ -10,9 +10,9 @@ type LoginFormInputs = {
   password: string;
 };
 
-
 export default function AuthPage() {
-  const { register: loginRegister, handleSubmit: handleLoginSubmit } = useForm<LoginFormInputs>();
+  const { register: loginRegister, handleSubmit: handleLoginSubmit } =
+    useForm<LoginFormInputs>();
 
   const onLogin = async (data: LoginFormInputs) => {
     const res = await fetch("/api/auth/login", {
@@ -24,17 +24,28 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20">
-      <Tabs defaultValue="login">
+    <div className='max-w-md mx-auto mt-20'>
+      <h1 className='mx-auto mt-20 font-bold text-3xl'>FastGym</h1>
+
+      <div className='mt-20'></div>
+
+      <Tabs defaultValue='login'>
         <TabsList>
-          <TabsTrigger value="login">Login</TabsTrigger>
+          <TabsTrigger value='login'>Login</TabsTrigger>
         </TabsList>
-        <TabsContent value="login">
+        <TabsContent value='login'>
           <form onSubmit={handleLoginSubmit(onLogin)}>
-            <div className="flex flex-col gap-4">
-              <Input placeholder="Email" {...loginRegister("email", { required: true })} />
-              <Input type="password" placeholder="Password" {...loginRegister("password", { required: true })} />
-              <Button type="submit">Login</Button>
+            <div className='flex flex-col gap-4'>
+              <Input
+                placeholder='Email'
+                {...loginRegister("email", { required: true })}
+              />
+              <Input
+                type='password'
+                placeholder='Password'
+                {...loginRegister("password", { required: true })}
+              />
+              <Button type='submit'>Login</Button>
             </div>
           </form>
         </TabsContent>
