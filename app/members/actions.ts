@@ -78,3 +78,18 @@ export async function updateMember(member: Member) {
 
   return { success: true };
 }
+
+export async function setMemberPassword(memberId: string, newPassword: string) {
+  const db = await connectToDatabase();
+  const collection = db.collection("members");
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  const result = await collection.updateOne(
+    { _id: new ObjectId(memberId) },
+    { $set: { passwordHash } }
+  );
+  if (result.matchedCount === 0) {
+    throw new Error("Member not found");
+  }
+  revalidatePath("/members");
+  return { success: true };
+}
