@@ -99,7 +99,7 @@ export function AddAdminModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-[425px] max-h-[80vh] overflow-y-scroll'>
         <DialogHeader>
           <DialogTitle>Add New Admin</DialogTitle>
           <DialogDescription>
