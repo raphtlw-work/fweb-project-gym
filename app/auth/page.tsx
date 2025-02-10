@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
+import { loginMemberAction, loginAdminAction } from "@/app/auth/actions";
 
 export default function AuthPage() {
   const { register: memberRegister, handleSubmit: handleMemberSubmit } = useForm<{ email: string; password: string }>();
@@ -14,8 +15,8 @@ export default function AuthPage() {
       const formData = new FormData();
       formData.append("email", data.email);
       formData.append("password", data.password);
-      const response = await fetch("/api/auth/login", { method: "POST", body: formData });
-      console.log(await response.json());
+      const result = await loginMemberAction(formData);
+      console.log(result);
     } catch (error) {
       console.error("Member login error:", error);
     }
@@ -26,8 +27,8 @@ export default function AuthPage() {
       const formData = new FormData();
       formData.append("email", data.email);
       formData.append("password", data.password);
-      const response = await fetch("/api/auth/admin/login", { method: "POST", body: formData });
-      console.log(await response.json());
+      const result = await loginAdminAction(formData);
+      console.log(result);
     } catch (error) {
       console.error("Admin login error:", error);
     }
