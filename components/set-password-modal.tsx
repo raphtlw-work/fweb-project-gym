@@ -2,13 +2,14 @@
 
 import * as React from "react";
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  ModalClose,
-} from "@/components/ui.";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -45,25 +46,27 @@ export function SetPasswordModal({
   };
 
   return (
-    <Modal open={open} onOpenChange={onClose}>
-      <ModalContent>
-        <ModalHeader>Set Password</ModalHeader>
-        <ModalClose />
-        <ModalBody>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-scroll">
+        <DialogHeader>
+          <DialogTitle>Set Password</DialogTitle>
+          <DialogDescription>Update the user's password.</DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
           <Input
-            type='password'
-            placeholder='Enter new password'
+            type="password"
+            placeholder="Enter new password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </ModalBody>
-        <ModalFooter>
-          <Button variant='outline' onClick={onClose}>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={handleSubmit}>Set Password</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
