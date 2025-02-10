@@ -14,18 +14,21 @@ import {
   QrCode,
 } from "lucide-react";
 import { BarcodeScanner } from "./barcode-scanner";
-
-const navItems = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Equipment List", href: "/equipment", icon: Dumbbell },
-  { name: "Members", href: "/members", icon: Users },
-  { name: "Manage Admins", href: "/admins", icon: UserCog },
-];
+import { verifySession } from "@/app/auth/dal";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
   const [scannerOpen, setScannerOpen] = useState(false);
+
+  const isLoggedIn = verifySession();
+
+  const navItems = [
+    { name: "Dashboard", href: "/", icon: LayoutDashboard },
+    { name: "Equipment List", href: "/equipment", icon: Dumbbell },
+    { name: "Members", href: "/members", icon: Users },
+    { name: "Manage Admins", href: "/admins", icon: UserCog },
+  ];
 
   return (
     <>
