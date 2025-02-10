@@ -79,6 +79,17 @@ export async function updateMember(member: Member) {
   return { success: true };
 }
 
+export async function deleteMember(memberId: string) {
+  const db = await connectToDatabase();
+  const collection = db.collection("members");
+  const result = await collection.deleteOne({ _id: new ObjectId(memberId) });
+  if (result.deletedCount === 0) {
+    throw new Error("Member not found");
+  }
+  revalidatePath("/members");
+  return { success: true };
+}
+
 export async function setMemberPassword(memberId: string, newPassword: string) {
   const db = await connectToDatabase();
   const collection = db.collection("members");
