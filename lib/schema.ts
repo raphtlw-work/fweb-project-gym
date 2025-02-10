@@ -26,6 +26,7 @@ export interface Admin {
   matriculationNo: string;
   school: string;
   kind: string;
+  passwordHash: string;
 }
 
 export type UserRole = "member" | "staff" | "admin";

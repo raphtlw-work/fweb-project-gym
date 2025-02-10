@@ -14,6 +14,18 @@ export default function AuthPage() {
   const { register: loginRegister, handleSubmit: handleLoginSubmit } =
     useForm<LoginFormInputs>();
 
+  const { register: adminRegister, handleSubmit: handleAdminSubmit } =
+    useForm<LoginFormInputs>();
+
+  const onAdminLogin = async (data: LoginFormInputs) => {
+    const res = await fetch("/api/auth/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    console.log(await res.json());
+  };
+
   const onLogin = async (data: LoginFormInputs) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
