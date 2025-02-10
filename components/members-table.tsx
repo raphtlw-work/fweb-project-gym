@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/table";
 import { Member } from "@/lib/schema";
 import { EditMemberModal } from "@/components/edit-member-modal";
+import { SetPasswordModal } from "@/components/set-password-modal";
 import { useToast } from "@/hooks/use-toast";
 
 export function MembersTable({ data }: { data: Member[] }) {
@@ -56,6 +57,7 @@ export function MembersTable({ data }: { data: Member[] }) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const [editMember, setEditMember] = React.useState<Member | null>(null);
+  const [setPasswordMember, setSetPasswordMember] = React.useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -334,6 +336,13 @@ export function MembersTable({ data }: { data: Member[] }) {
         <EditMemberModal
           member={editMember}
           onClose={() => setEditMember(null)}
+        />
+      )}
+      {setPasswordMember && (
+        <SetPasswordModal
+          memberId={setPasswordMember}
+          open={!!setPasswordMember}
+          onClose={() => setSetPasswordMember(null)}
         />
       )}
     </div>
