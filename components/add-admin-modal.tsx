@@ -71,6 +71,7 @@ export function AddAdminModal({
     defaultValues: {
       matriculationNo: "",
       name: "",
+      password: "",
       type: "Student",
       remarks: "",
     },
