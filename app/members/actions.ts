@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/db";
 import { Member } from "@/lib/schema";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcrypt";
 
 export async function fetchMemberByMatriculation(
   matriculation: string
@@ -31,7 +32,9 @@ export async function fetchMemberByMatriculation(
   return null;
 }
 
-export async function addMember(member: Omit<Member, "id">) {
+export async function addMember(
+  member: Omit<Member, "id" | "passwordHash"> & { password: string }
+) {
   const db = await connectToDatabase();
   const collection = db.collection("members");
 
@@ -43,7 +46,10 @@ export async function addMember(member: Omit<Member, "id">) {
     throw new Error("Member already exists.");
   }
 
-  const result = await collection.insertOne(member);
+  const result = await collection.insertOne({
+    ...member,
+    passwordHash: await bcrypt.hash(member.password, 10),
+  });
 
   if (!result.insertedId) {
     throw new Error("Failed to add member");
