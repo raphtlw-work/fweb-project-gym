@@ -6,7 +6,11 @@ import { redirect } from "next/navigation";
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
-export type SessionPayload = { userId: string; expiresAt: Date };
+export type SessionPayload = {
+  userId: string;
+  expiresAt: Date;
+  role: "admin" | "member";
+};
 
 export async function encrypt(payload: SessionPayload) {
   return new SignJWT(payload)
@@ -27,9 +31,12 @@ export async function decrypt(session: string | undefined = "") {
   }
 }
 
-export async function createSession(userId: string) {
+export async function createSession(
+  userId: string,
+  role: SessionPayload["role"]
+) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = await encrypt({ userId, expiresAt });
+  const session = await encrypt({ userId, expiresAt, role });
   const cookieStore = await cookies();
 
   cookieStore.set("session", session, {

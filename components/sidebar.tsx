@@ -1,9 +1,9 @@
 import SidebarClient from "./sidebar-client";
 import { verifySession } from "@/app/auth/dal";
 
-export default function Sidebar() {
-  const user = verifySession();
-  const isAdmin = user?.role === "admin";
+export async function Sidebar() {
+  const user = await verifySession();
+  const isAdmin = user.role === "admin";
 
   const navItems = isAdmin
     ? [

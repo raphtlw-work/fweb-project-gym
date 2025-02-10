@@ -34,7 +34,7 @@ export async function loginMemberAction(formData: FormData) {
     ...rest,
   } as Member;
 
-  await createSession(returned.id);
+  await createSession(returned.id, "member");
   redirect("/");
 }
 
@@ -66,6 +66,6 @@ export async function loginAdminAction(formData: FormData) {
     ...rest,
   } as Admin;
 
-  await createSession(returned.id);
+  await createSession(returned.id, "admin");
   redirect("/");
 }
