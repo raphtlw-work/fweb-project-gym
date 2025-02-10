@@ -13,9 +13,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("token")?.value;
+  const session = request.cookies.get("session")?.value;
 
-  if (!token) {
+  if (!session) {
     const loginUrl = new URL("/auth", request.url);
     return NextResponse.redirect(loginUrl);
   }
