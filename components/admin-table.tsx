@@ -97,26 +97,50 @@ export const columns: ColumnDef<Admin>[] = [
     },
   },
   {
-    accessorKey: "matriculationNo",
-    header: "Matriculation No.",
-  },
-  {
-    accessorKey: "school",
+    accessorKey: "email",
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          School
+          Email
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
     },
   },
   {
-    accessorKey: "kind",
-    header: "Kind",
+    accessorKey: "matriculationNumber",
+    header: "Matriculation No.",
+  },
+  {
+    accessorKey: "membershipStatus",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Membership Status
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "type",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Type
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      );
+    },
   },
   {
     id: "actions",
