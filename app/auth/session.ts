@@ -74,6 +74,5 @@ export async function deleteSession() {
 }
 
 export async function logout() {
-  deleteSession();
-  redirect("/login");
+  await deleteSession();
 }

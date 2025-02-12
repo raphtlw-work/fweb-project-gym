@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
@@ -14,6 +14,10 @@ import {
   QrCode,
 } from "lucide-react";
 import { BarcodeScanner } from "./barcode-scanner";
+import { cookies } from "next/headers";
+import { deleteSession, logout } from "@/app/auth/session";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 type NavItem = {
   name: string;
@@ -35,6 +39,25 @@ export default function SidebarClient({ navItems }: SidebarClientProps) {
     Dumbbell,
     Users,
     UserCog,
+  };
+
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      toast({
+        title: "Logout success",
+      });
+      await fetch("/api/logout", {
+        method: "POST",
+      });
+      redirect("/auth");
+    } else {
+      toast({
+        title: "Cancelled",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -82,16 +105,20 @@ export default function SidebarClient({ navItems }: SidebarClientProps) {
             <QrCode className='w-5 h-5 mr-2' />
             Launch Scanner
           </Button>
-          <Button
-            variant='outline'
-            size='icon'
-            className='w-full'
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            <SunIcon className='h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0' />
-            <MoonIcon className='absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100' />
-            <span className='sr-only'>Toggle theme</span>
-          </Button>
+          <div className='flex flex-row justify-between'>
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              <SunIcon className='h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0' />
+              <MoonIcon className='absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100' />
+              <span className='sr-only'>Toggle theme</span>
+            </Button>
+            <Button variant='outline' onClick={handleLogout}>
+              Logout
+            </Button>
+          </div>
         </div>
       </aside>
       <BarcodeScanner open={scannerOpen} onOpenChange={setScannerOpen} />
