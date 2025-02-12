@@ -50,7 +50,12 @@ const formSchema = z.object({
   name: z.string().min(3, {
     message: "Name must be at least 3 characters.",
   }),
-  password: z
+  email: z.string().email({
+    message: "Invalid email address.",
+  }),
+  membershipStatus: z.enum(["Active", "Inactive"]),
+  lastEntry: z.date().nullable().optional(),
+  lastExit: z.date().nullable().optional(),
     .string()
     .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
       message: "Password strength does not meet the requirements.",
@@ -76,7 +81,11 @@ export function AddAdminModal({
     defaultValues: {
       matriculationNumber: "",
       name: "",
+      email: "",
       password: "",
+      membershipStatus: "Active",
+      lastEntry: null,
+      lastExit: null,
       type: "Student",
       remarks: "",
     },
@@ -115,6 +124,143 @@ export function AddAdminModal({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder='e.g. example@domain.com' {...field} />
+                  </FormControl>
+                  <FormDescription>Enter the email address</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='membershipStatus'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Membership Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select status' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value='Active'>Active</SelectItem>
+                      <SelectItem value='Inactive'>Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>Choose membership status</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='lastEntry'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>Last Entry</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={`w-[240px] pl-3 text-left font-normal ${
+                            !field.value && "text-muted-foreground"
+                          }`}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>Enter last entry date</FormDescription>
+                  <FormMessage />
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => field.onChange(new Date())}
+                    className='mt-2'
+                  >
+                    Use Current Date
+                  </Button>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='lastExit'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>Last Exit</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={`w-[240px] pl-3 text-left font-normal ${
+                            !field.value && "text-muted-foreground"
+                          }`}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>Enter last exit date</FormDescription>
+                  <FormMessage />
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => field.onChange(new Date())}
+                    className='mt-2'
+                  >
+                    Use Current Date
+                  </Button>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name='matriculationNumber'
