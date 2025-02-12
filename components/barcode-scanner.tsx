@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { ScannerHand } from "./icons/scanner-hand";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
+import { format } from "date-fns";
 
 interface BarcodeScannerProps {
   open: boolean;
@@ -41,8 +42,26 @@ export function BarcodeScanner({ open, onOpenChange }: BarcodeScannerProps) {
             } else if (member.lastEntry && member.lastExit) {
               member.lastEntry = now;
               member.lastExit = null;
+            } else if (member.lastEntry === null && member.lastExit === null) {
+              member.lastEntry = now;
+              member.lastExit = null;
             }
             await updateMember(member);
+            toast({
+              title: `${
+                (member.lastEntry === null && member.lastExit === null) ||
+                (member.lastEntry && member.lastExit === null)
+                  ? "Entry"
+                  : "Exit"
+              } Registered`,
+              description: `Gym member ${
+                (member.lastEntry === null && member.lastExit === null) ||
+                (member.lastEntry && member.lastExit === null)
+                  ? "entered"
+                  : "exited"
+              } at ${format(now, "PPP")}`,
+              variant: "default",
+            });
           }
         } catch (error) {
           toast({

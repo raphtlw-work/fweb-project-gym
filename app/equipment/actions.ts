@@ -18,7 +18,7 @@ export async function addEquipment(equipment: Omit<Equipment, "id">) {
 
     revalidatePath("/equipment");
 
-    return { success: true, id: result.insertedId };
+    return { success: true, id: result.insertedId.toString() };
   } catch (error) {
     console.error("Failed to add equipment:", error);
     throw new Error("Failed to add equipment");

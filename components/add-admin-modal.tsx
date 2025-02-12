@@ -48,23 +48,25 @@ const formSchema = z.object({
     message: "Matriculation number must be 7 digits followed by a letter.",
   }),
   name: z.string().min(3, {
-    message: "Name must be at least 3 characters.",
+    message: "Name must be at least 3 characters long.",
   }),
-  email: z.string().email({
-    message: "Invalid email address.",
+  type: z.enum(["Student", "Staff"], {
+    required_error: "Type is required.",
   }),
-  membershipStatus: z.enum(["Active", "Inactive"]),
-  lastEntry: z.date().nullable().optional(),
-  lastExit: z.date().nullable().optional(),
-    .string()
+  password: z
+    .string({
+      required_error: "Password is required",
+    })
     .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
       message: "Password strength does not meet the requirements.",
     }),
-  type: z.enum(["Student", "Staff"]),
-  startDate: z.date({
-    required_error: "A date of entry is required.",
-  }),
-  remarks: z.string().optional(),
+  membershipStatus: z.enum(["Active", "Inactive"]),
+  remarks: z
+    .string()
+    .max(500, {
+      message: "Remarks cannot exceed 500 characters.",
+    })
+    .optional(),
 });
 
 export function AddAdminModal({
@@ -80,13 +82,10 @@ export function AddAdminModal({
     resolver: zodResolver(formSchema),
     defaultValues: {
       matriculationNumber: "",
-      name: "",
-      email: "",
-      password: "",
       membershipStatus: "Active",
-      lastEntry: null,
-      lastExit: null,
+      name: "",
       type: "Student",
+      password: "",
       remarks: "",
     },
   });
@@ -104,7 +103,7 @@ export function AddAdminModal({
         form.reset();
       } catch (error) {
         toast({
-          title: "Adding member failed",
+          title: "Adding admin failed",
           description: String(error),
           variant: "destructive",
         });
@@ -124,20 +123,6 @@ export function AddAdminModal({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder='e.g. example@domain.com' {...field} />
-                  </FormControl>
-                  <FormDescription>Enter the email address</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name='membershipStatus'
@@ -160,104 +145,6 @@ export function AddAdminModal({
                   </Select>
                   <FormDescription>Choose membership status</FormDescription>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='lastEntry'
-              render={({ field }) => (
-                <FormItem className='flex flex-col'>
-                  <FormLabel>Last Entry</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={`w-[240px] pl-3 text-left font-normal ${
-                            !field.value && "text-muted-foreground"
-                          }`}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        mode='single'
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>Enter last entry date</FormDescription>
-                  <FormMessage />
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => field.onChange(new Date())}
-                    className='mt-2'
-                  >
-                    Use Current Date
-                  </Button>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='lastExit'
-              render={({ field }) => (
-                <FormItem className='flex flex-col'>
-                  <FormLabel>Last Exit</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={`w-[240px] pl-3 text-left font-normal ${
-                            !field.value && "text-muted-foreground"
-                          }`}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        mode='single'
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>Enter last exit date</FormDescription>
-                  <FormMessage />
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => field.onChange(new Date())}
-                    className='mt-2'
-                  >
-                    Use Current Date
-                  </Button>
                 </FormItem>
               )}
             />
@@ -332,55 +219,6 @@ export function AddAdminModal({
                   </Select>
                   <FormDescription>Choose type</FormDescription>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='startDate'
-              render={({ field }) => (
-                <FormItem className='flex flex-col'>
-                  <FormLabel>Starting date of entry</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={`w-[240px] pl-3 text-left font-normal ${
-                            !field.value && "text-muted-foreground"
-                          }`}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        mode='single'
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>Enter start date</FormDescription>
-                  <FormMessage />
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => field.onChange(new Date())}
-                    className='mt-2'
-                  >
-                    Use Current Date
-                  </Button>
                 </FormItem>
               )}
             />

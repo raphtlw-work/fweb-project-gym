@@ -23,9 +23,12 @@ export interface Equipment {
 export interface Admin {
   id: string;
   name: string;
-  matriculationNo: string;
-  school: string;
-  kind: string;
+  email: string;
+  matriculationNumber: string;
+  membershipStatus: "Active" | "Inactive";
+  type: "Student" | "Staff";
+  remarks: string;
+
   passwordHash: string;
 }
 
