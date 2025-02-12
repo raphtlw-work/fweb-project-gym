@@ -40,15 +40,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
+import { addAdmin } from "@/app/admins/actions";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
-  matriculationNo: z.string().regex(/^\d{7}[A-Za-z]$/, {
-    message: "Must be 7 numbers followed by 1 letter",
+  matriculationNumber: z.string().regex(/^\d{7}[A-Za-z]$/, {
+    message: "Matriculation number must be 7 digits followed by a letter.",
   }),
   name: z.string().min(3, {
     message: "Name must be at least 3 characters.",
   }),
-  password: z.string().regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+  password: z
+    .string()
+    .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
       message: "Password strength does not meet the requirements.",
     }),
   type: z.enum(["Student", "Staff"]),
@@ -66,10 +70,11 @@ export function AddAdminModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      matriculationNo: "",
+      matriculationNumber: "",
       name: "",
       password: "",
       type: "Student",
@@ -80,22 +85,20 @@ export function AddAdminModal({
   const onSubmit = useCallback(
     async (values: z.infer<typeof formSchema>) => {
       try {
-        const response = await fetch("/api/admins", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
+        await addAdmin({
+          email: `${values.matriculationNumber}@student.tp.edu.sg`,
+          ...values,
+          remarks: values.remarks ?? "",
+          membershipStatus: "Active",
         });
-
-        if (!response.ok) {
-          throw new Error("Failed to add admin");
-        }
-
         onOpenChange(false);
-        router.refresh();
+        form.reset();
       } catch (error) {
-        console.error("Error adding admin:", error);
+        toast({
+          title: "Adding member failed",
+          description: String(error),
+          variant: "destructive",
+        });
       }
     },
     [router]
@@ -114,7 +117,7 @@ export function AddAdminModal({
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
             <FormField
               control={form.control}
-              name='matriculationNo'
+              name='matriculationNumber'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Matriculation No.</FormLabel>
@@ -150,7 +153,11 @@ export function AddAdminModal({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type='password' placeholder='Enter password' {...field} />
+                    <Input
+                      type='password'
+                      placeholder='Enter password'
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>Set a password for admin</FormDescription>
                   <FormMessage />
