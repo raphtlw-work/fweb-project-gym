@@ -26,13 +26,13 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
-  // if (
-  //   session?.role !== "admin" &&
-  //   (req.nextUrl.pathname.startsWith("/admins") ||
-  //     req.nextUrl.pathname.startsWith("/equipment"))
-  // ) {
-  //   return NextResponse.redirect(new URL("/", req.nextUrl));
-  // }
+  if (
+    session?.role !== "admin" &&
+    (req.nextUrl.pathname.startsWith("/admins") ||
+      req.nextUrl.pathname.startsWith("/equipment"))
+  ) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
 
   return NextResponse.next();
 }
